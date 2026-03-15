@@ -206,10 +206,23 @@ function initCategorySelector() {
     updateCategoryInput();
 }
 
+function initProductImageFallback() {
+    const fallbackSrc = "/static/images/product_default.png";
+    document.querySelectorAll("[data-fallback-target='product-image']").forEach((img) => {
+        img.addEventListener("error", () => {
+            if (img.dataset.fallbackApplied === "true") return;
+            img.dataset.fallbackApplied = "true";
+            img.classList.add("is-fallback-image");
+            img.src = fallbackSrc;
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initColorSelection();
     initPurchaseAjax();
     initDeleteConfirm();
     initMerchantCharts();
     initCategorySelector();
+    initProductImageFallback();
 });

@@ -44,10 +44,15 @@
 <section class="cards-grid">
     {% for p in products %}
     <article class="product-card">
-        <img src="{{ p['image_url'] or 'https://via.placeholder.com/400x260?text=QuickSell+Product' }}" alt="{{ p['name'] }}">
+        <img
+            class="product-image-fallback"
+            data-fallback-target="product-image"
+            src="{{ p['image_url'] or 'https://via.placeholder.com/400x260?text=QuickSell+Product' }}"
+            alt="{{ p['name'] }}"
+        >
         <div class="card-content">
             <h3>{{ p["name"] }}</h3>
-            <p class="muted-text">{{ p["description"] }}</p>
+            <p class="muted-text product-description">{{ p["description"] }}</p>
             <p><strong>Category:</strong> {{ p["category"] or "-" }}</p>
             <p><strong>Colors:</strong> {{ p["colors"] or "-" }}</p>
             <p><strong>Merchant:</strong> {{ p["merchant_username"] }}</p>
