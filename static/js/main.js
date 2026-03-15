@@ -58,7 +58,158 @@ function initPurchaseAjax() {
     });
 }
 
+function initDeleteConfirm() {
+    const modal = document.getElementById("deleteConfirmModal");
+    const modalMessage = document.getElementById("delete-confirm-message");
+    const cancelBtn = document.getElementById("delete-confirm-cancel");
+    const confirmBtn = document.getElementById("delete-confirm-submit");
+    if (!modal || !modalMessage || !cancelBtn || !confirmBtn) return;
+
+    let pendingForm = null;
+
+    const openModal = (form) => {
+        pendingForm = form;
+        const message =
+            form.getAttribute("data-confirm-message") ||
+            "Are you sure you want to delete this item?";
+        modalMessage.textContent = message;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+    };
+
+    const closeModal = () => {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        pendingForm = null;
+    };
+
+    document.querySelectorAll(".delete-form").forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            openModal(form);
+        });
+    });
+
+    cancelBtn.addEventListener("click", closeModal);
+
+    confirmBtn.addEventListener("click", () => {
+        if (!pendingForm) return;
+        pendingForm.submit();
+    });
+
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+            closeModal();
+        }
+    });
+}
+
+function initMerchantCharts() {
+    if (!window.Chart || !window.merchantChartsData) return;
+    const data = window.merchantChartsData;
+
+    const salesCanvas = document.getElementById("salesTrendChart");
+    if (salesCanvas) {
+        new Chart(salesCanvas, {
+            type: "line",
+            data: {
+                labels: data.salesLabels.length ? data.salesLabels : ["No sales yet"],
+                datasets: [
+                    {
+                        label: "Revenue ($)",
+                        data: data.salesValues.length ? data.salesValues : [0],
+                        borderColor: "#50808e",
+                        backgroundColor: "rgba(80, 128, 142, 0.2)",
+                        tension: 0.3,
+                        fill: true,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        });
+    }
+
+    const categoryCanvas = document.getElementById("categoryPieChart");
+    if (categoryCanvas) {
+        new Chart(categoryCanvas, {
+            type: "pie",
+            data: {
+                labels: data.categoryLabels.length ? data.categoryLabels : ["No category data"],
+                datasets: [
+                    {
+                        data: data.categoryValues.length ? data.categoryValues : [1],
+                        backgroundColor: ["#a3c9a8", "#84b59f", "#69a297", "#50808e", "#ddd8c4"],
+                        borderColor: "#f3f0e5",
+                        borderWidth: 2,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        });
+    }
+
+    const topCanvas = document.getElementById("topProductChart");
+    if (topCanvas) {
+        new Chart(topCanvas, {
+            type: "bar",
+            data: {
+                labels: data.topLabels.length ? data.topLabels : ["No sales yet"],
+                datasets: [
+                    {
+                        label: "Revenue ($)",
+                        data: data.topValues.length ? data.topValues : [0],
+                        backgroundColor: "#69a297",
+                        borderRadius: 6,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true },
+                },
+            },
+        });
+    }
+}
+
+function initCategorySelector() {
+    const categorySelect = document.getElementById("category_select");
+    const newCategoryRow = document.getElementById("new-category-row");
+    const newCategoryInput = document.getElementById("new_category_input");
+
+    if (!categorySelect || !newCategoryRow || !newCategoryInput) return;
+
+    const updateCategoryInput = () => {
+        const isNew = categorySelect.value === "__new__";
+        newCategoryRow.classList.toggle("hidden", !isNew);
+        newCategoryInput.required = isNew;
+        if (!isNew) {
+            newCategoryInput.value = "";
+        }
+    };
+
+    categorySelect.addEventListener("change", updateCategoryInput);
+    updateCategoryInput();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initColorSelection();
     initPurchaseAjax();
+    initDeleteConfirm();
+    initMerchantCharts();
+    initCategorySelector();
 });

@@ -45,10 +45,20 @@ body {
 }
 
 .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 700;
     font-size: 1.3rem;
     color: var(--c-primary-dark);
     text-decoration: none;
+}
+
+.brand-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    object-fit: cover;
 }
 
 .nav-links {
@@ -147,6 +157,23 @@ main {
     font-weight: 700;
 }
 
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.chart-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.65rem;
+}
+
+.chart-wrap {
+    height: 240px;
+    position: relative;
+}
+
 .panel {
     padding: 1rem;
     margin-bottom: 1rem;
@@ -154,6 +181,16 @@ main {
 
 .subtle {
     background: rgba(163, 201, 168, 0.2);
+}
+
+.login-continue-btn {
+    font-size: 1.1rem;
+    font-weight: 700;
+    min-height: 52px;
+}
+
+.login-demo-box {
+    margin-top: 1.1rem;
 }
 
 .form-grid,
@@ -389,6 +426,50 @@ th {
 .empty-row {
     color: var(--c-muted);
     padding: 0.8rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.confirm-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(36, 66, 74, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+}
+
+.confirm-modal-backdrop.is-open {
+    display: flex;
+}
+
+.confirm-modal {
+    width: min(460px, 96%);
+    background: var(--c-surface);
+    border: 1px solid rgba(80, 128, 142, 0.25);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+}
+
+.confirm-modal h3 {
+    margin-top: 0;
+    margin-bottom: 0.4rem;
+}
+
+.confirm-modal p {
+    margin-top: 0;
+    color: var(--c-muted);
+}
+
+.confirm-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
 }
 
 .confirmation ul {

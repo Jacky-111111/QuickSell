@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}QuickSell{% endblock %}</title>
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    <link rel="apple-touch-icon" href="/static/images/quicksell-icon.png">
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <header class="site-header">
         <nav class="nav shell">
-            <a class="brand" href="/">QuickSell</a>
+            <a class="brand" href="/">
+                <img class="brand-icon" src="/static/images/quicksell-icon.png" alt="QuickSell logo">
+                <span>QuickSell</span>
+            </a>
             <div class="nav-links">
                 {% if current_user %}
                     <span class="pill muted">Signed in: {{ current_user["username"] }} ({{ current_user["role"] }})</span>
@@ -37,6 +42,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% block extra_scripts %}{% endblock %}
     <script src="/static/js/main.js"></script>
 </body>
 </html>

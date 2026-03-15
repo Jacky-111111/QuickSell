@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
@@ -59,6 +60,18 @@ def require_role(request: Request, role: str):
     return user
 
 
+def resolve_category(selected_category: str, new_category: str, fallback_category: str = "") -> str:
+    """
+    Choose category from form fields.
+    Priority: new category > selected category > fallback.
+    """
+    if new_category.strip():
+        return new_category.strip()
+    if selected_category.strip() and selected_category.strip() != "__new__":
+        return selected_category.strip()
+    return fallback_category.strip()
+
+
 @app.get("/")
 def home(request: Request):
     return render(request, "home.html", {})
@@ -117,6 +130,27 @@ def merchant_dashboard(request: Request):
     total_revenue = sum(item["subtotal"] for item in sales)
     low_stock_count = sum(1 for p in products if p["stock_quantity"] <= 5)
 
+    # Chart data: revenue trend by day (last 7 days with sales)
+    revenue_by_day: dict[str, float] = defaultdict(float)
+    for item in sales:
+        day = str(item["created_at"]).split("T")[0]
+        revenue_by_day[day] += float(item["subtotal"])
+    trend_days = sorted(revenue_by_day.keys())[-7:]
+    chart_sales_labels = trend_days
+    chart_sales_values = [round(revenue_by_day[d], 2) for d in trend_days]
+
+    # Chart data: product count by category
+    category_counts: dict[str, int] = defaultdict(int)
+    for p in products:
+        category_counts[p["category"] or "Uncategorized"] += 1
+    chart_category_labels = list(category_counts.keys())
+    chart_category_values = list(category_counts.values())
+
+    # Chart data: top product revenue (up to 5)
+    top_products = sorted(products, key=lambda p: float(p["sales_revenue"] or 0), reverse=True)[:5]
+    chart_top_labels = [p["name"] for p in top_products]
+    chart_top_values = [round(float(p["sales_revenue"] or 0), 2) for p in top_products]
+
     return render(
         request,
         "merchant_dashboard.html",
@@ -126,6 +160,12 @@ def merchant_dashboard(request: Request):
             "total_units": total_units,
             "total_revenue": total_revenue,
             "low_stock_count": low_stock_count,
+            "chart_sales_labels": chart_sales_labels,
+            "chart_sales_values": chart_sales_values,
+            "chart_category_labels": chart_category_labels,
+            "chart_category_values": chart_category_values,
+            "chart_top_labels": chart_top_labels,
+            "chart_top_values": chart_top_values,
         },
     )
 
@@ -136,10 +176,11 @@ def new_product_page(request: Request):
     if not user:
         flash(request, "error", "Please sign in as a merchant.")
         return redirect("/login")
+    categories = crud.get_distinct_categories()
     return render(
         request,
         "product_form.html",
-        {"page_title": "Add Product", "product": None, "color_csv": ""},
+        {"page_title": "Add Product", "product": None, "color_csv": "", "categories": categories},
     )
 
 
@@ -150,7 +191,8 @@ def create_product(
     description: str = Form(""),
     price: float = Form(...),
     stock_quantity: int = Form(...),
-    category: str = Form(""),
+    selected_category: str = Form(""),
+    new_category: str = Form(""),
     image_url: str = Form(""),
     is_active: Optional[str] = Form(None),
     colors: str = Form(""),
@@ -165,7 +207,7 @@ def create_product(
         "description": description.strip(),
         "price": price,
         "stock_quantity": stock_quantity,
-        "category": category.strip(),
+        "category": resolve_category(selected_category, new_category),
         "image_url": image_url.strip(),
         "is_active": is_active,
     }
@@ -190,10 +232,16 @@ def edit_product_page(request: Request, product_id: int):
         flash(request, "error", "Product not found.")
         return redirect("/merchant/dashboard")
     colors = crud.get_product_colors(product_id)
+    categories = crud.get_distinct_categories()
     return render(
         request,
         "product_form.html",
-        {"page_title": "Edit Product", "product": product, "color_csv": ", ".join(colors)},
+        {
+            "page_title": "Edit Product",
+            "product": product,
+            "color_csv": ", ".join(colors),
+            "categories": categories,
+        },
     )
 
 
@@ -205,7 +253,8 @@ def edit_product(
     description: str = Form(""),
     price: float = Form(...),
     stock_quantity: int = Form(...),
-    category: str = Form(""),
+    selected_category: str = Form(""),
+    new_category: str = Form(""),
     image_url: str = Form(""),
     is_active: Optional[str] = Form(None),
     colors: str = Form(""),
@@ -223,7 +272,7 @@ def edit_product(
             "description": description.strip(),
             "price": price,
             "stock_quantity": stock_quantity,
-            "category": category.strip(),
+            "category": resolve_category(selected_category, new_category),
             "image_url": image_url.strip(),
             "is_active": is_active,
         },

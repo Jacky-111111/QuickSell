@@ -25,6 +25,27 @@
     </article>
 </section>
 
+<section class="charts-grid">
+    <article class="panel chart-card">
+        <h3>Revenue Trend (Last 7 Sales Days)</h3>
+        <div class="chart-wrap">
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+    </article>
+    <article class="panel chart-card">
+        <h3>Products by Category</h3>
+        <div class="chart-wrap">
+            <canvas id="categoryPieChart"></canvas>
+        </div>
+    </article>
+    <article class="panel chart-card">
+        <h3>Top Product Revenue</h3>
+        <div class="chart-wrap">
+            <canvas id="topProductChart"></canvas>
+        </div>
+    </article>
+</section>
+
 <section class="panel">
     <h3>Your Products</h3>
     <div class="table-wrap">
@@ -65,7 +86,7 @@
                         <form method="post" action="/merchant/products/{{ p['id'] }}/toggle-active">
                             <button class="btn btn-small btn-secondary" type="submit">Toggle</button>
                         </form>
-                        <form method="post" action="/merchant/products/{{ p['id'] }}/delete" onsubmit="return confirm('Delete this product?')">
+                        <form method="post" action="/merchant/products/{{ p['id'] }}/delete" class="delete-form" data-confirm-message="Are you sure you want to delete '{{ p['name'] }}'?">
                             <button class="btn btn-small btn-danger" type="submit">Delete</button>
                         </form>
                     </td>
@@ -113,4 +134,29 @@
         </table>
     </div>
 </section>
+
+<div id="deleteConfirmModal" class="confirm-modal-backdrop" aria-hidden="true">
+    <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
+        <h3 id="delete-confirm-title">Confirm Delete</h3>
+        <p id="delete-confirm-message">Are you sure you want to delete this item?</p>
+        <div class="confirm-modal-actions">
+            <button id="delete-confirm-cancel" type="button" class="btn btn-secondary">Cancel</button>
+            <button id="delete-confirm-submit" type="button" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.merchantChartsData = {
+        salesLabels: {{ chart_sales_labels|tojson }},
+        salesValues: {{ chart_sales_values|tojson }},
+        categoryLabels: {{ chart_category_labels|tojson }},
+        categoryValues: {{ chart_category_values|tojson }},
+        topLabels: {{ chart_top_labels|tojson }},
+        topValues: {{ chart_top_values|tojson }}
+    };
+</script>
 {% endblock %}
