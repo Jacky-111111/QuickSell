@@ -1,0 +1,472 @@
+I used ChatGPT 5.2 Thinking mode to generate a well-designed prompt for Cursor to begin with.
+Cursor selected its model on its own.
+
+
+--------------------------------------------------------------------------------
+
+
+Initial Conversation with ChatGPT:
+
+I asked:
+I'm taking the course 15113 and I need to complete this assignment by designing a dataset project using SQLite. 
+I wish to create a platform that can help people sell their products, just like what Shopify does, allowing them to add products, edit product inventory quantities, select colors, make purchases, and have real-time updates on the products after purchase (feel free to add more functions and columns for the database). 
+There will be two type of users, merchants and buyers. The user interface should be a front-end website (HTML, CSS, and JS). For the sake of backend, use FastAPI. 
+Please help me write a detailed prompt so that I can then provide it to the cursor to start building.
+[Then I pasted the homework instructions.]
+Colors: ddd8c4，a3c9a8，84b59f，69a297，50808e. Make it intuitive and modern.
+
+
+ChatGPT's answer:
+Absolutely — here’s a strong, detailed Cursor prompt you can paste directly in to have it build the project.
+
+I also adjusted it so the project clearly satisfies the SQLite + CRUD + filtered/sorted read assignment requirements, while still matching your idea of a mini-Shopify marketplace.
+
+⸻
+
+Prompt for Cursor
+
+Build a full-stack web app called MiniShop for a course assignment. The app should simulate a simple e-commerce platform where merchants can manage products and buyers can browse and purchase them. The project must use:
+	•	Backend: Python with FastAPI
+	•	Database: SQLite
+	•	Frontend: HTML, CSS, JavaScript
+	•	No React or Vue
+	•	Keep the structure simple, readable, and student-friendly
+
+The app should look modern, intuitive, and clean, using this color palette:
+	•	#ddd8c4
+	•	#a3c9a8
+	•	#84b59f
+	•	#69a297
+	•	#50808e
+
+Use these colors consistently across the UI for backgrounds, buttons, cards, accents, and hover states. The design should feel soft, polished, and modern.
+
+⸻
+
+Project Purpose
+
+This app is for a database assignment focused on SQLite CRUD operations. The code should clearly demonstrate:
+	•	Create records
+	•	Read records
+	•	Update records
+	•	Delete records
+
+The database logic should be easy to understand and inspect for grading.
+
+⸻
+
+Main Idea
+
+There are two user roles:
+	1.	Merchant
+	•	Can add products
+	•	Can edit products
+	•	Can update inventory quantities
+	•	Can manage product colors
+	•	Can delete products
+	•	Can view their products and sales
+	2.	Buyer
+	•	Can browse products
+	•	Can filter and sort products
+	•	Can view product details
+	•	Can choose color and quantity
+	•	Can purchase products
+	•	After purchase, product inventory should update immediately in the database and reflect on the website
+
+⸻
+
+Important Assignment Constraints
+
+Even though this is a web app, make sure it very clearly satisfies the course requirements:
+	•	Use SQLite
+	•	Have at least one table with at least 4 columns including id
+	•	Support all CRUD operations
+	•	Include at least one Read query with filtering or sorting based on user input
+	•	The program must be runnable locally with clear instructions
+
+Even better, implement multiple related tables to make the app more realistic.
+
+⸻
+
+Required Features
+
+1. Authentication / Role Selection
+
+Keep authentication simple. Do not build a complicated secure auth system.
+
+Implement either:
+	•	a very simple login with username + role, or
+	•	a demo mode where users select “Merchant” or “Buyer”
+
+Store users in the database.
+
+Each user should have:
+	•	id
+	•	username
+	•	role (merchant or buyer)
+	•	created_at
+
+⸻
+
+2. Merchant Features
+
+Merchants should be able to:
+	•	Create a new product
+	•	Edit an existing product
+	•	Delete a product
+	•	Update inventory quantity
+	•	Add available colors for a product
+	•	See a list of only their own products
+	•	See product sales history or purchase history related to their products
+
+Each product should include useful fields like:
+	•	id
+	•	merchant_id
+	•	name
+	•	description
+	•	price
+	•	stock_quantity
+	•	category
+	•	image_url (optional placeholder)
+	•	is_active
+	•	created_at
+	•	updated_at
+
+Product colors can be stored either:
+	•	in a separate product_colors table, or
+	•	as a text field if simpler
+
+Prefer a separate table for better database design.
+
+⸻
+
+3. Buyer Features
+
+Buyers should be able to:
+	•	View all active products
+	•	Search by name
+	•	Filter by category
+	•	Filter by color
+	•	Sort by price ascending/descending
+	•	Sort by newest
+	•	View product detail page
+	•	Select a color
+	•	Select quantity
+	•	Purchase a product
+
+On purchase:
+	•	validate stock
+	•	decrease stock quantity in SQLite
+	•	save the purchase in a purchases/orders table
+	•	update the UI immediately so inventory changes are visible
+
+If stock becomes 0, mark product as out of stock on the UI.
+
+⸻
+
+4. CRUD Coverage
+
+Make sure the app visibly includes these CRUD examples:
+
+Create
+	•	Create users
+	•	Merchant adds a product
+	•	Buyer creates a purchase/order
+
+Read
+	•	Show all products
+	•	Show filtered products by category/color
+	•	Show sorted products by price or date
+	•	Show merchant’s products
+	•	Show buyer’s purchase history
+
+Update
+	•	Merchant edits product info
+	•	Merchant updates stock quantity
+	•	Merchant changes product colors
+	•	Inventory automatically updates after purchase
+
+Delete
+	•	Merchant deletes a product
+	•	Optionally allow deleting purchase history only if needed, but product deletion is enough
+
+⸻
+
+Recommended Database Schema
+
+Use SQLite with these tables.
+
+users
+	•	id INTEGER PRIMARY KEY AUTOINCREMENT
+	•	username TEXT NOT NULL UNIQUE
+	•	role TEXT NOT NULL CHECK(role IN (‘merchant’, ‘buyer’))
+	•	created_at TEXT NOT NULL
+
+products
+	•	id INTEGER PRIMARY KEY AUTOINCREMENT
+	•	merchant_id INTEGER NOT NULL
+	•	name TEXT NOT NULL
+	•	description TEXT
+	•	price REAL NOT NULL
+	•	stock_quantity INTEGER NOT NULL DEFAULT 0
+	•	category TEXT
+	•	image_url TEXT
+	•	is_active INTEGER NOT NULL DEFAULT 1
+	•	created_at TEXT NOT NULL
+	•	updated_at TEXT NOT NULL
+	•	FOREIGN KEY (merchant_id) REFERENCES users(id)
+
+product_colors
+	•	id INTEGER PRIMARY KEY AUTOINCREMENT
+	•	product_id INTEGER NOT NULL
+	•	color_name TEXT NOT NULL
+	•	FOREIGN KEY (product_id) REFERENCES products(id)
+
+orders
+	•	id INTEGER PRIMARY KEY AUTOINCREMENT
+	•	buyer_id INTEGER NOT NULL
+	•	total_price REAL NOT NULL
+	•	created_at TEXT NOT NULL
+	•	FOREIGN KEY (buyer_id) REFERENCES users(id)
+
+order_items
+	•	id INTEGER PRIMARY KEY AUTOINCREMENT
+	•	order_id INTEGER NOT NULL
+	•	product_id INTEGER NOT NULL
+	•	color_name TEXT
+	•	quantity INTEGER NOT NULL
+	•	unit_price REAL NOT NULL
+	•	subtotal REAL NOT NULL
+	•	FOREIGN KEY (order_id) REFERENCES orders(id)
+	•	FOREIGN KEY (product_id) REFERENCES products(id)
+
+This design is preferred because it shows stronger relational database understanding.
+
+⸻
+
+Backend Requirements
+
+Use FastAPI with clear routes.
+
+Organize the backend cleanly, for example:
+	•	main.py
+	•	database.py
+	•	models.py or raw SQL schema setup
+	•	crud.py
+	•	templates/
+	•	static/
+
+You may use:
+	•	sqlite3 directly, or
+	•	SQLAlchemy
+
+If choosing one, prefer the option that is easier for a student to explain. Simplicity and readability matter more than abstraction. If using SQLAlchemy, keep it beginner-friendly.
+
+API / Route Requirements
+
+Build routes for:
+	•	Home page
+	•	Merchant dashboard
+	•	Buyer dashboard
+	•	Product list
+	•	Product detail
+	•	Add product
+	•	Edit product
+	•	Delete product
+	•	Purchase product
+	•	Filter/sort/search products
+	•	View orders/purchase history
+
+Use server-rendered HTML with FastAPI templates (Jinja2), plus some JavaScript for interactivity.
+
+⸻
+
+Frontend Requirements
+
+Use:
+	•	HTML
+	•	CSS
+	•	vanilla JavaScript
+
+No frontend frameworks.
+
+UI expectations
+
+Create a polished but simple interface with:
+	•	responsive layout
+	•	product cards
+	•	clear forms
+	•	dropdowns for sorting/filtering
+	•	color selection buttons or pills
+	•	stock badges
+	•	clean navigation bar
+	•	success/error messages
+	•	intuitive merchant dashboard
+
+Suggested Pages
+	•	Home page
+	•	Login / role selection page
+	•	Buyer product listing page
+	•	Product detail page
+	•	Buyer purchase history page
+	•	Merchant dashboard
+	•	Add/edit product page
+
+⸻
+
+JavaScript Requirements
+
+Use JavaScript where helpful for:
+	•	updating displayed inventory after purchase without full page confusion
+	•	dynamic filtering/sorting UI
+	•	form validation
+	•	showing selected color
+	•	better UX feedback
+
+Keep JS simple and readable.
+
+⸻
+
+Real-Time Update Requirement
+
+Implement “real-time updates” in a lightweight course-project way.
+
+This does not need WebSockets unless you want to add them.
+
+A normal acceptable solution:
+	•	buyer submits purchase
+	•	backend updates SQLite immediately
+	•	frontend reloads or updates the displayed inventory count right away
+
+If you want, you may add a small fetch-based update flow so the stock changes on the page without a full refresh, but keep it simple.
+
+⸻
+
+Code Quality Requirements
+
+The project should be:
+	•	easy to run
+	•	well-structured
+	•	beginner-friendly
+	•	commented where useful
+	•	not overengineered
+
+Please generate:
+	1.	complete project structure
+	2.	all backend files
+	3.	all frontend files
+	4.	SQLite schema creation
+	5.	seed/demo data
+	6.	CSS styling using the provided palette
+	7.	clear README with setup and run steps
+
+⸻
+
+README Requirements
+
+Include a README that explains:
+	•	project purpose
+	•	features
+	•	database schema
+	•	how CRUD is satisfied
+	•	how filtering/sorting is satisfied
+	•	how to install dependencies
+	•	how to run the app
+	•	sample demo accounts
+	•	sample workflows for merchant and buyer
+
+⸻
+
+Demo Data
+
+Seed the database with:
+	•	at least 2 merchants
+	•	at least 2 buyers
+	•	at least 8 sample products
+	•	products in multiple categories
+	•	multiple color options for several products
+
+Example categories:
+	•	Clothing
+	•	Accessories
+	•	Home
+	•	Tech
+
+⸻
+
+Must-Have Assignment Evidence
+
+Make sure the final app clearly demonstrates these grading points:
+	•	SQLite database in actual use
+	•	At least one table with 4+ columns including id
+	•	Full CRUD
+	•	Read query with user-controlled filtering/sorting
+	•	Working interactive UI
+	•	Clear local run instructions
+
+Also, add comments in the code or README explicitly pointing out where:
+	•	Create happens
+	•	Read happens
+	•	Update happens
+	•	Delete happens
+	•	Filter/sort query happens
+
+This is important for grading.
+
+⸻
+
+Nice-to-Have Features
+
+Add these if they do not overcomplicate the project:
+	•	low-stock warning for merchants
+	•	inactive/archive product toggle
+	•	order confirmation page
+	•	merchant sales summary
+	•	simple cart before checkout
+	•	image placeholder support
+	•	flash messages for success/errors
+
+⸻
+
+Deliverable Expectations
+
+Please generate the full project code, not just an outline.
+
+I want:
+	•	complete folder structure
+	•	complete backend and frontend code
+	•	database initialization
+	•	seed script or automatic startup initialization
+	•	all HTML/CSS/JS files
+	•	README
+	•	sample .gitignore
+	•	requirements.txt
+
+The result should be something I can open in Cursor, run locally, and then refine.
+
+Please prioritize:
+	•	correctness
+	•	simplicity
+	•	assignment compliance
+	•	clear database operations
+	•	clean modern UI
+
+⸻
+
+Extra instruction for Cursor
+
+Before generating code, briefly explain the planned file structure and architecture. Then generate the files one by one with complete code.
+
+⸻
+
+My recommendation
+
+One small note: your assignment sheet mentions Flask as the example web option, but that does not sound like a strict Flask-only requirement. If your professor only cares that it is a simple web app with SQLite CRUD, FastAPI should be fine. If you worry they want Flask specifically, I can also rewrite this prompt into a Flask version, which may be slightly safer for grading.
+
+I can also make you a shorter Cursor prompt and a professor-friendly project description for your README.
+
+
+--------------------------------------------------------------------------------
+
+
+In Cursor I continued by giving more detailed instructions on specific features, UI designs, and bug fixes.
