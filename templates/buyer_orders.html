@@ -13,6 +13,8 @@
                     <th>Qty</th>
                     <th>Unit Price</th>
                     <th>Subtotal</th>
+                    <th>Address</th>
+                    <th>Note</th>
                     <th>Date</th>
                 </tr>
             </thead>
@@ -20,16 +22,62 @@
                 {% for item in orders %}
                 <tr>
                     <td>{{ item["order_id"] }}</td>
-                    <td>{{ item["product_name"] }}</td>
+                    <td>
+                        <a href="/buyer/products/{{ item['product_id'] }}">{{ item["product_name"] }}</a>
+                    </td>
                     <td>{{ item["color_name"] or "-" }}</td>
                     <td>{{ item["quantity"] }}</td>
                     <td>${{ "%.2f"|format(item["unit_price"]) }}</td>
                     <td>${{ "%.2f"|format(item["subtotal"]) }}</td>
+                    <td>
+                        {% if item["shipping_address"] %}
+                            {% set address_text = item["shipping_address"] %}
+                            <div class="cell-preview-wrap">
+                                {% if address_text|length > 6 %}
+                                    <span class="cell-preview-text">{{ address_text[:6] }}...</span>
+                                    <button
+                                        type="button"
+                                        class="btn-text longtext-open"
+                                        data-longtext-title="Shipping Address"
+                                        data-longtext-content="{{ address_text }}"
+                                    >
+                                        View
+                                    </button>
+                                {% else %}
+                                    <span class="cell-preview-text">{{ address_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item["buyer_note"] %}
+                            {% set note_text = item["buyer_note"] %}
+                            <div class="cell-preview-wrap">
+                                {% if note_text|length > 6 %}
+                                    <span class="cell-preview-text">{{ note_text[:6] }}...</span>
+                                    <button
+                                        type="button"
+                                        class="btn-text longtext-open"
+                                        data-longtext-title="Buyer Note"
+                                        data-longtext-content="{{ note_text }}"
+                                    >
+                                        View
+                                    </button>
+                                {% else %}
+                                    <span class="cell-preview-text">{{ note_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ item["created_at"] }}</td>
                 </tr>
                 {% endfor %}
                 {% if orders|length == 0 %}
-                <tr><td colspan="7" class="empty-row">No orders yet.</td></tr>
+                <tr><td colspan="9" class="empty-row">No orders yet.</td></tr>
                 {% endif %}
             </tbody>
         </table>

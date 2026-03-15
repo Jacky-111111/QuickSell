@@ -255,6 +255,13 @@ textarea:focus {
     transform: translateY(-1px);
 }
 
+.btn:disabled {
+    background: #b8c2be;
+    color: #f5f6f5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .btn-primary {
     background: var(--c-primary);
     color: white;
@@ -458,9 +465,80 @@ th {
     color: var(--c-muted);
 }
 
+.form-warning {
+    margin: 0;
+    min-height: 1.2em;
+    color: var(--c-danger);
+    font-weight: 700;
+}
+
 .empty-row {
     color: var(--c-muted);
     padding: 0.8rem;
+}
+
+.cell-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.cell-preview-text {
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-text {
+    background: transparent;
+    border: none;
+    color: var(--c-primary-dark);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.text-preview-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(36, 66, 74, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    padding: 1rem;
+}
+
+.text-preview-backdrop.is-open {
+    display: flex;
+}
+
+.text-preview-modal {
+    width: min(560px, 96%);
+    background: var(--c-surface);
+    border: 1px solid rgba(80, 128, 142, 0.25);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+}
+
+.text-preview-modal h3 {
+    margin-top: 0;
+    margin-bottom: 0.45rem;
+}
+
+.text-preview-modal p {
+    margin: 0;
+    white-space: pre-wrap;
+    color: var(--c-text);
+}
+
+.text-preview-actions {
+    margin-top: 0.85rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .hidden {

@@ -116,6 +116,8 @@
                     <th>Color</th>
                     <th>Qty</th>
                     <th>Subtotal</th>
+                    <th>Address</th>
+                    <th>Note</th>
                     <th>Date</th>
                 </tr>
             </thead>
@@ -123,16 +125,60 @@
                 {% for s in sales %}
                 <tr>
                     <td>{{ s["order_id"] }}</td>
-                    <td>{{ s["product_name"] }}</td>
+                    <td><a href="/merchant/products/{{ s['product_id'] }}/detail">{{ s["product_name"] }}</a></td>
                     <td>{{ s["buyer_username"] }}</td>
                     <td>{{ s["color_name"] or "-" }}</td>
                     <td>{{ s["quantity"] }}</td>
                     <td>${{ "%.2f"|format(s["subtotal"]) }}</td>
+                    <td>
+                        {% if s["shipping_address"] %}
+                            {% set address_text = s["shipping_address"] %}
+                            <div class="cell-preview-wrap">
+                                {% if address_text|length > 6 %}
+                                    <span class="cell-preview-text">{{ address_text[:6] }}...</span>
+                                    <button
+                                        type="button"
+                                        class="btn-text longtext-open"
+                                        data-longtext-title="Shipping Address"
+                                        data-longtext-content="{{ address_text }}"
+                                    >
+                                        View
+                                    </button>
+                                {% else %}
+                                    <span class="cell-preview-text">{{ address_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if s["buyer_note"] %}
+                            {% set note_text = s["buyer_note"] %}
+                            <div class="cell-preview-wrap">
+                                {% if note_text|length > 6 %}
+                                    <span class="cell-preview-text">{{ note_text[:6] }}...</span>
+                                    <button
+                                        type="button"
+                                        class="btn-text longtext-open"
+                                        data-longtext-title="Buyer Note"
+                                        data-longtext-content="{{ note_text }}"
+                                    >
+                                        View
+                                    </button>
+                                {% else %}
+                                    <span class="cell-preview-text">{{ note_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>{{ s["created_at"] }}</td>
                 </tr>
                 {% endfor %}
                 {% if sales|length == 0 %}
-                <tr><td colspan="7" class="empty-row">No sales yet.</td></tr>
+                <tr><td colspan="9" class="empty-row">No sales yet.</td></tr>
                 {% endif %}
             </tbody>
         </table>

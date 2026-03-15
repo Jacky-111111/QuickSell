@@ -23,9 +23,48 @@ function initPurchaseAjax() {
     const feedback = document.getElementById("purchase-feedback");
     const stockCount = document.getElementById("stock-count");
     const quantityInput = document.getElementById("quantity-input");
+    const addressInput = form.querySelector("input[name='shipping_address']");
+    const buyNowBtn = document.getElementById("buy-now-btn");
+    const validationMsg = document.getElementById("purchase-validation");
+
+    const getCurrentStock = () => Number(quantityInput?.max || 0);
+
+    const validatePurchaseForm = () => {
+        if (!quantityInput || !addressInput || !buyNowBtn) return false;
+
+        const stock = getCurrentStock();
+        const qty = Number(quantityInput.value);
+        const address = addressInput.value.trim();
+        let message = "";
+
+        if (stock <= 0) {
+            message = "Out of stock.";
+        } else if (!Number.isFinite(qty) || qty < 1) {
+            message = "Quantity must be at least 1.";
+        } else if (qty > stock) {
+            message = `Only ${stock} item(s) left in stock.`;
+        } else if (!address) {
+            message = "Please enter shipping address.";
+        }
+
+        const isInvalid = message !== "";
+        buyNowBtn.disabled = isInvalid;
+
+        if (validationMsg) {
+            validationMsg.textContent = message;
+        }
+
+        return !isInvalid;
+    };
+
+    quantityInput?.addEventListener("input", validatePurchaseForm);
+    quantityInput?.addEventListener("change", validatePurchaseForm);
+    addressInput?.addEventListener("input", validatePurchaseForm);
+    validatePurchaseForm();
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (!validatePurchaseForm()) return;
 
         const formData = new FormData(form);
         const response = await fetch(form.action, {
@@ -55,6 +94,8 @@ function initPurchaseAjax() {
                 }
             }
         }
+
+        validatePurchaseForm();
     });
 }
 
@@ -218,6 +259,41 @@ function initProductImageFallback() {
     });
 }
 
+function initLongTextPreview() {
+    const modal = document.getElementById("textPreviewModal");
+    const titleEl = document.getElementById("text-preview-title");
+    const contentEl = document.getElementById("text-preview-content");
+    const closeBtn = document.getElementById("text-preview-close");
+    if (!modal || !titleEl || !contentEl || !closeBtn) return;
+
+    const closeModal = () => {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        contentEl.textContent = "";
+    };
+
+    document.querySelectorAll(".longtext-open").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const title = btn.getAttribute("data-longtext-title") || "Details";
+            const text = btn.getAttribute("data-longtext-content") || "";
+            titleEl.textContent = title;
+            contentEl.textContent = text;
+            modal.classList.add("is-open");
+            modal.setAttribute("aria-hidden", "false");
+        });
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+            closeModal();
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     initColorSelection();
     initPurchaseAjax();
@@ -225,4 +301,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initMerchantCharts();
     initCategorySelector();
     initProductImageFallback();
+    initLongTextPreview();
 });

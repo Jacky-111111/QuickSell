@@ -315,6 +315,24 @@ def toggle_active(request: Request, product_id: int):
     return redirect("/merchant/dashboard")
 
 
+@app.get("/merchant/products/{product_id}/detail")
+def merchant_product_detail(request: Request, product_id: int):
+    user = require_role(request, "merchant")
+    if not user:
+        flash(request, "error", "Please sign in as a merchant.")
+        return redirect("/login")
+
+    product = crud.get_product_detail(product_id)
+    if not product or product["merchant_id"] != user["id"]:
+        flash(request, "error", "Product not found.")
+        return redirect("/merchant/dashboard")
+    if not product["is_active"]:
+        flash(request, "error", "Not Active Product")
+        return redirect("/merchant/dashboard")
+
+    return render(request, "merchant_product_detail.html", {"product": product})
+
+
 @app.get("/buyer/products")
 def buyer_products(
     request: Request,
@@ -354,9 +372,12 @@ def product_detail(request: Request, product_id: int):
         return redirect("/login")
 
     product = crud.get_product_detail(product_id)
-    if not product or not product["is_active"]:
-        flash(request, "error", "Product is not available.")
-        return redirect("/buyer/products")
+    if not product:
+        flash(request, "error", "Product not found.")
+        return redirect("/buyer/orders")
+    if not product["is_active"]:
+        flash(request, "error", "Not Active Product")
+        return redirect("/buyer/orders")
 
     return render(request, "product_detail.html", {"product": product})
 
@@ -367,6 +388,8 @@ def purchase_product(
     product_id: int,
     color_name: str = Form(""),
     quantity: int = Form(...),
+    shipping_address: str = Form(""),
+    buyer_note: str = Form(""),
 ):
     user = require_role(request, "buyer")
     if not user:
@@ -376,7 +399,12 @@ def purchase_product(
         return redirect("/login")
 
     ok, message, order_id, new_stock = crud.create_order_for_product(
-        user["id"], product_id, color_name.strip(), quantity
+        user["id"],
+        product_id,
+        color_name.strip(),
+        quantity,
+        shipping_address.strip(),
+        buyer_note.strip(),
     )
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":

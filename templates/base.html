@@ -42,6 +42,16 @@
         {% block content %}{% endblock %}
     </main>
 
+    <div id="textPreviewModal" class="text-preview-backdrop" aria-hidden="true">
+        <div class="text-preview-modal" role="dialog" aria-modal="true" aria-labelledby="text-preview-title">
+            <h3 id="text-preview-title">Details</h3>
+            <p id="text-preview-content"></p>
+            <div class="text-preview-actions">
+                <button id="text-preview-close" type="button" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
     {% block extra_scripts %}{% endblock %}
     <script src="/static/js/main.js"></script>
 </body>

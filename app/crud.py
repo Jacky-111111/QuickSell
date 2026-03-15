@@ -187,6 +187,9 @@ def get_merchant_sales_history(merchant_id: int) -> list[sqlite3.Row]:
             SELECT oi.id,
                    o.id AS order_id,
                    o.created_at,
+                   o.shipping_address,
+                   o.buyer_note,
+                   p.id AS product_id,
                    p.name AS product_name,
                    oi.color_name,
                    oi.quantity,
@@ -291,6 +294,8 @@ def create_order_for_product(
     product_id: int,
     color_name: str,
     quantity: int,
+    shipping_address: str,
+    buyer_note: str,
 ) -> Tuple[bool, str, Optional[int], Optional[int]]:
     with get_connection() as conn:
         try:
@@ -325,8 +330,11 @@ def create_order_for_product(
 
             # CREATE EXAMPLE: create order + order item records
             order_cursor = conn.execute(
-                "INSERT INTO orders (buyer_id, total_price, created_at) VALUES (?, ?, ?)",
-                (buyer_id, subtotal, now_iso()),
+                """
+                INSERT INTO orders (buyer_id, total_price, shipping_address, buyer_note, created_at)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (buyer_id, subtotal, shipping_address.strip(), buyer_note.strip(), now_iso()),
             )
             order_id = int(order_cursor.lastrowid)
 
@@ -360,6 +368,9 @@ def get_buyer_orders(buyer_id: int) -> list[sqlite3.Row]:
             SELECT oi.id,
                    o.id AS order_id,
                    o.created_at,
+                   o.shipping_address,
+                   o.buyer_note,
+                   oi.product_id,
                    p.name AS product_name,
                    oi.color_name,
                    oi.quantity,

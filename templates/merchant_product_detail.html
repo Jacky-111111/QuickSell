@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Product Detail{% endblock %}
+{% block content %}
+<section class="product-detail">
+    <article class="panel detail-layout">
+        <img
+            class="detail-image product-image-fallback"
+            data-fallback-target="product-image"
+            src="{{ product['image_url'] or 'https://via.placeholder.com/540x360?text=QuickSell+Product' }}"
+            alt="{{ product['name'] }}"
+        >
+        <div>
+            <h2>{{ product["name"] }}</h2>
+            <p class="muted-text">{{ product["description"] }}</p>
+            <p><strong>Category:</strong> {{ product["category"] or "-" }}</p>
+            <p><strong>Stock:</strong> {{ product["stock_quantity"] }}</p>
+            <p><strong>Status:</strong>
+                {% if product["is_active"] %}
+                    <span class="badge success">Active</span>
+                {% else %}
+                    <span class="badge muted">Inactive</span>
+                {% endif %}
+            </p>
+            <p class="price">${{ "%.2f"|format(product["price"]) }}</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="/merchant/products/{{ product['id'] }}/edit">Edit Product</a>
+                <a class="btn btn-secondary" href="/merchant/dashboard">Back to Dashboard</a>
+            </div>
+        </div>
+    </article>
+</section>
+{% endblock %}

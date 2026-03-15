@@ -42,8 +42,17 @@
                 Quantity
                 <input id="quantity-input" name="quantity" type="number" min="1" max="{{ product['stock_quantity'] }}" value="1" required>
             </label>
+            <label>
+                Shipping address
+                <input name="shipping_address" type="text" maxlength="200" placeholder="Street, city, zip code" required>
+            </label>
+            <label>
+                Note to seller
+                <textarea name="buyer_note" rows="2" maxlength="300" placeholder="Optional note"></textarea>
+            </label>
+            <p id="purchase-validation" class="form-warning"></p>
             <div class="purchase-actions">
-                <button class="btn btn-primary" type="submit" {% if product["stock_quantity"] <= 0 %}disabled{% endif %}>Buy Now</button>
+                <button id="buy-now-btn" class="btn btn-primary" type="submit" {% if product["stock_quantity"] <= 0 %}disabled{% endif %}>Buy Now</button>
                 <a class="btn btn-secondary" href="/buyer/products">Back</a>
             </div>
         </form>

@@ -55,6 +55,8 @@ def init_db() -> None:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 buyer_id INTEGER NOT NULL,
                 total_price REAL NOT NULL,
+                shipping_address TEXT NOT NULL DEFAULT '',
+                buyer_note TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (buyer_id) REFERENCES users(id)
             );
@@ -72,6 +74,20 @@ def init_db() -> None:
             );
             """
         )
+        # Lightweight migration for older databases created before new order fields existed.
+        order_cols = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(orders)").fetchall()
+        }
+        if "shipping_address" not in order_cols:
+            conn.execute(
+                "ALTER TABLE orders ADD COLUMN shipping_address TEXT NOT NULL DEFAULT ''"
+            )
+        if "buyer_note" not in order_cols:
+            conn.execute(
+                "ALTER TABLE orders ADD COLUMN buyer_note TEXT NOT NULL DEFAULT ''"
+            )
+        conn.commit()
 
     seed_demo_data()
 

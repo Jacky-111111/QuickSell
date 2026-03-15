@@ -67,6 +67,8 @@ http://127.0.0.1:8000
 - If page changes are not visible:
   - restart `uvicorn`
   - hard refresh browser (`Cmd + Shift + R`)
+- If you updated from an older local DB:
+  - restart the app once so `init_db()` can auto-add new `orders` columns (`shipping_address`, `buyer_note`)
 
 ## Project Structure
 
@@ -106,6 +108,8 @@ SQLite operations are intentionally explicit and easy to inspect.
   - `product_colors`
   - `orders`
   - `order_items`
+- Backward-compatible migration:
+  - `app/database.py` checks `PRAGMA table_info(orders)` and auto-runs `ALTER TABLE` for newly added columns.
 
 ### 3) Seed/demo data
 
@@ -150,19 +154,32 @@ All major SQL is in `app/crud.py`.
 
 In `create_order_for_product()`:
 - validate product exists and stock is enough
-- insert `orders`
+- insert `orders` (including shipping address and buyer note)
 - insert `order_items`
 - update `products.stock_quantity`
 - commit if success, rollback on DB error
 
 This makes inventory updates consistent with order creation.
 
+## Important UI Behaviors
+
+- Product image fallback:
+  - If an external image URL is broken, frontend auto-switches to `/static/images/product_default.png`.
+- Buy validation on product detail page:
+  - `Buy Now` is disabled when quantity is invalid or exceeds stock.
+  - `Buy Now` remains disabled until shipping address is filled.
+  - Red warning text appears immediately for invalid states.
+- Long text preview for Address/Note:
+  - Buyer `My Purchase History` and Merchant `Recent Sales` both show truncated Address/Note.
+  - If text is longer than 6 characters, it shows `...` plus a `View` button.
+  - Clicking `View` opens a modal with full text.
+
 ## Database Schema (Summary)
 
 - `users`: `id`, `username`, `role`, `created_at`
 - `products`: `id`, `merchant_id`, `name`, `description`, `price`, `stock_quantity`, `category`, `image_url`, `is_active`, `created_at`, `updated_at`
 - `product_colors`: `id`, `product_id`, `color_name`
-- `orders`: `id`, `buyer_id`, `total_price`, `created_at`
+- `orders`: `id`, `buyer_id`, `total_price`, `shipping_address`, `buyer_note`, `created_at`
 - `order_items`: `id`, `order_id`, `product_id`, `color_name`, `quantity`, `unit_price`, `subtotal`
 
 ## Demo Accounts
