@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Home{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-card">
+        <h1>QuickSell</h1>
+        <p>
+            A course-friendly e-commerce demo built with FastAPI + SQLite.
+            Merchants manage products, buyers browse and purchase with live stock updates.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="/login">Enter QuickSell</a>
+            {% if current_user and current_user["role"] == "merchant" %}
+                <a class="btn btn-secondary" href="/merchant/dashboard">Open Dashboard</a>
+            {% elif current_user and current_user["role"] == "buyer" %}
+                <a class="btn btn-secondary" href="/buyer/products">Browse Products</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Browse Products{% endblock %}
+{% block content %}
+<section class="dashboard-top">
+    <h2>Browse Products</h2>
+</section>
+
+<section class="panel">
+    <form method="get" action="/buyer/products" class="filters-grid">
+        <label>
+            Search
+            <input name="q" type="text" value="{{ q }}" placeholder="Search by product name">
+        </label>
+        <label>
+            Category
+            <select name="category">
+                <option value="">All</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Color
+            <select name="color">
+                <option value="">All</option>
+                {% for c in colors %}
+                    <option value="{{ c }}" {% if selected_color == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Sort
+            <select name="sort">
+                <option value="newest" {% if selected_sort == "newest" %}selected{% endif %}>Newest</option>
+                <option value="price_asc" {% if selected_sort == "price_asc" %}selected{% endif %}>Price: Low to High</option>
+                <option value="price_desc" {% if selected_sort == "price_desc" %}selected{% endif %}>Price: High to Low</option>
+            </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Apply</button>
+    </form>
+</section>
+
+<section class="cards-grid">
+    {% for p in products %}
+    <article class="product-card">
+        <img src="{{ p['image_url'] or 'https://via.placeholder.com/400x260?text=QuickSell+Product' }}" alt="{{ p['name'] }}">
+        <div class="card-content">
+            <h3>{{ p["name"] }}</h3>
+            <p class="muted-text">{{ p["description"] }}</p>
+            <p><strong>Category:</strong> {{ p["category"] or "-" }}</p>
+            <p><strong>Colors:</strong> {{ p["colors"] or "-" }}</p>
+            <p><strong>Merchant:</strong> {{ p["merchant_username"] }}</p>
+            <div class="card-row">
+                <span class="price">${{ "%.2f"|format(p["price"]) }}</span>
+                {% if p["stock_quantity"] > 0 %}
+                    <span class="badge success">In stock: {{ p["stock_quantity"] }}</span>
+                {% else %}
+                    <span class="badge danger">Out of stock</span>
+                {% endif %}
+            </div>
+            <a class="btn btn-primary full-width-btn" href="/buyer/products/{{ p['id'] }}">View Details</a>
+        </div>
+    </article>
+    {% endfor %}
+    {% if products|length == 0 %}
+    <p class="empty-row">No products matched your filters.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Login{% endblock %}
+{% block content %}
+<section class="panel form-panel">
+    <h2>Login / Role Selection</h2>
+    <p class="muted-text">
+        Simple demo login for the assignment. Existing usernames keep their role.
+    </p>
+    <form method="post" action="/login" class="form-grid">
+        <label>
+            Username
+            <input name="username" type="text" required placeholder="e.g. alice_store">
+        </label>
+        <label>
+            Role
+            <select name="role" required>
+                <option value="merchant">Merchant</option>
+                <option value="buyer">Buyer</option>
+            </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Continue</button>
+    </form>
+
+    <div class="panel subtle">
+        <h3>Demo accounts</h3>
+        <p><strong>Merchants:</strong> alice_store, greenlane_shop</p>
+        <p><strong>Buyers:</strong> brian_buyer, nina_buyer</p>
+    </div>
+</section>
+{% endblock %}

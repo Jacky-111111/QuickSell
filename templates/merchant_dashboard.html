@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Merchant Dashboard{% endblock %}
+{% block content %}
+<section class="dashboard-top">
+    <h2>Merchant Dashboard</h2>
+    <a class="btn btn-primary" href="/merchant/products/new">+ Add Product</a>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <h3>Total Products</h3>
+        <p>{{ products|length }}</p>
+    </article>
+    <article class="stat-card">
+        <h3>Units Sold</h3>
+        <p>{{ total_units }}</p>
+    </article>
+    <article class="stat-card">
+        <h3>Revenue</h3>
+        <p>${{ "%.2f"|format(total_revenue) }}</p>
+    </article>
+    <article class="stat-card">
+        <h3>Low Stock (<=5)</h3>
+        <p>{{ low_stock_count }}</p>
+    </article>
+</section>
+
+<section class="panel">
+    <h3>Your Products</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Colors</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{{ p["name"] }}</td>
+                    <td>{{ p["category"] or "-" }}</td>
+                    <td>${{ "%.2f"|format(p["price"]) }}</td>
+                    <td>
+                        {{ p["stock_quantity"] }}
+                        {% if p["stock_quantity"] <= 5 %}
+                            <span class="badge warning">Low</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ p["colors"] or "-" }}</td>
+                    <td>
+                        {% if p["is_active"] %}
+                            <span class="badge success">Active</span>
+                        {% else %}
+                            <span class="badge muted">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a class="btn btn-small" href="/merchant/products/{{ p['id'] }}/edit">Edit</a>
+                        <form method="post" action="/merchant/products/{{ p['id'] }}/toggle-active">
+                            <button class="btn btn-small btn-secondary" type="submit">Toggle</button>
+                        </form>
+                        <form method="post" action="/merchant/products/{{ p['id'] }}/delete" onsubmit="return confirm('Delete this product?')">
+                            <button class="btn btn-small btn-danger" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if products|length == 0 %}
+                <tr><td colspan="7" class="empty-row">No products yet. Add your first one.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <h3>Recent Sales</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Product</th>
+                    <th>Buyer</th>
+                    <th>Color</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td>{{ s["order_id"] }}</td>
+                    <td>{{ s["product_name"] }}</td>
+                    <td>{{ s["buyer_username"] }}</td>
+                    <td>{{ s["color_name"] or "-" }}</td>
+                    <td>{{ s["quantity"] }}</td>
+                    <td>${{ "%.2f"|format(s["subtotal"]) }}</td>
+                    <td>{{ s["created_at"] }}</td>
+                </tr>
+                {% endfor %}
+                {% if sales|length == 0 %}
+                <tr><td colspan="7" class="empty-row">No sales yet.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

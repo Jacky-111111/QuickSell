@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | My Orders{% endblock %}
+{% block content %}
+<section class="panel">
+    <h2>My Purchase History</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Product</th>
+                    <th>Color</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in orders %}
+                <tr>
+                    <td>{{ item["order_id"] }}</td>
+                    <td>{{ item["product_name"] }}</td>
+                    <td>{{ item["color_name"] or "-" }}</td>
+                    <td>{{ item["quantity"] }}</td>
+                    <td>${{ "%.2f"|format(item["unit_price"]) }}</td>
+                    <td>${{ "%.2f"|format(item["subtotal"]) }}</td>
+                    <td>{{ item["created_at"] }}</td>
+                </tr>
+                {% endfor %}
+                {% if orders|length == 0 %}
+                <tr><td colspan="7" class="empty-row">No orders yet.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

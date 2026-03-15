@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Product Detail{% endblock %}
+{% block content %}
+<section class="product-detail">
+    <article class="panel detail-layout">
+        <img class="detail-image" src="{{ product['image_url'] or 'https://via.placeholder.com/540x360?text=QuickSell+Product' }}" alt="{{ product['name'] }}">
+        <div>
+            <h2>{{ product["name"] }}</h2>
+            <p class="muted-text">{{ product["description"] }}</p>
+            <p><strong>Category:</strong> {{ product["category"] or "-" }}</p>
+            <p><strong>Seller:</strong> {{ product["merchant_username"] }}</p>
+            <p class="price">${{ "%.2f"|format(product["price"]) }}</p>
+            <p id="stock-count"><strong>Stock:</strong> {{ product["stock_quantity"] }}</p>
+            {% if product["stock_quantity"] <= 0 %}
+                <p class="badge danger inline-badge">Out of stock</p>
+            {% endif %}
+        </div>
+    </article>
+
+    <article class="panel">
+        <h3>Purchase</h3>
+        <form id="purchase-form" method="post" action="/buyer/products/{{ product['id'] }}/purchase" data-product-id="{{ product['id'] }}">
+            <input type="hidden" id="color_name" name="color_name" value="">
+            <div class="color-picker">
+                <p><strong>Select color:</strong></p>
+                <div class="color-pills" id="color-pills">
+                    {% for color in product["colors"] %}
+                        <button type="button" class="color-pill" data-color="{{ color }}">{{ color }}</button>
+                    {% endfor %}
+                    {% if product["colors"]|length == 0 %}
+                        <span class="muted-text">No specific colors</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <label>
+                Quantity
+                <input id="quantity-input" name="quantity" type="number" min="1" max="{{ product['stock_quantity'] }}" value="1" required>
+            </label>
+            <button class="btn btn-primary" type="submit" {% if product["stock_quantity"] <= 0 %}disabled{% endif %}>Buy Now</button>
+            <a class="btn btn-secondary" href="/buyer/products">Back</a>
+        </form>
+        <p id="purchase-feedback" class="muted-text"></p>
+    </article>
+</section>
+{% endblock %}

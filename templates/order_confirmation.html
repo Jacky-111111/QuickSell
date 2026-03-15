@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}QuickSell | Order Confirmation{% endblock %}
+{% block content %}
+<section class="panel confirmation">
+    <h2>Order Confirmed</h2>
+    <p>Your order was placed successfully.</p>
+    <ul>
+        <li><strong>Order ID:</strong> {{ order["id"] }}</li>
+        <li><strong>Buyer:</strong> {{ order["buyer_username"] }}</li>
+        <li><strong>Total:</strong> ${{ "%.2f"|format(order["total_price"]) }}</li>
+        <li><strong>Date:</strong> {{ order["created_at"] }}</li>
+    </ul>
+    <div class="hero-actions">
+        <a class="btn btn-primary" href="/buyer/orders">View My Orders</a>
+        <a class="btn btn-secondary" href="/buyer/products">Continue Shopping</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QuickSell{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav shell">
+            <a class="brand" href="/">QuickSell</a>
+            <div class="nav-links">
+                {% if current_user %}
+                    <span class="pill muted">Signed in: {{ current_user["username"] }} ({{ current_user["role"] }})</span>
+                    {% if current_user["role"] == "merchant" %}
+                        <a href="/merchant/dashboard">Merchant Dashboard</a>
+                    {% else %}
+                        <a href="/buyer/products">Browse Products</a>
+                        <a href="/buyer/orders">My Orders</a>
+                    {% endif %}
+                    <a href="/logout">Logout</a>
+                {% else %}
+                    <a href="/login">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="shell">
+        {% if flash_message %}
+            <div class="flash {{ flash_message['level'] }}">
+                {{ flash_message["text"] }}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
