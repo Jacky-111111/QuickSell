@@ -5,6 +5,8 @@ It uses FastAPI + SQLite + Jinja templates (HTML/CSS/JS), with two roles:
 - Merchant: manage products and view sales
 - Buyer: browse, filter/sort, and purchase products
 
+Made with help of Cursor.
+
 ## Deployment Status
 
 This project is **not deployed online**.
