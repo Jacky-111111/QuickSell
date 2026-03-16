@@ -17,46 +17,18 @@ It runs **locally only** on your computer.
 - Frontend: Jinja2 templates + HTML/CSS/vanilla JavaScript
 - No React / Vue
 
-## Local Run Guide (Step-by-Step)
+## Local Run Guide
 
-> Run each command on its own line.  
-> Do not paste all commands into one single line.
-
-### 1) Open project folder
-
-```bash
-cd /path/to/QuickSell
-```
-
-### 2) Create virtual environment
+Assume you are already in the `QuickSell` project folder.
 
 ```bash
 python3 -m venv .venv
-```
-
-### 3) Activate virtual environment
-
-```bash
 source .venv/bin/activate
-```
-
-### 4) Install dependencies
-
-```bash
 pip install -r requirements.txt
-```
-
-### 5) Start backend server
-
-```bash
 uvicorn main:app --reload
 ```
 
-### 6) Open website in browser
-
-```text
-http://127.0.0.1:8000
-```
+Open: `http://127.0.0.1:8000`
 
 ## Quick Troubleshooting
 
